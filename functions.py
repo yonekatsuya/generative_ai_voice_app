@@ -105,7 +105,7 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
             mic_list.append(pa.get_device_info_by_index(i)['index'])
  
     print(mic_list)
-    with sd.InputStream(samplerate=fs, channels=mic_list[1]) as stream:
+    with sd.InputStream(samplerate=fs, channels=2) as stream:
         while True:
             data, overflowed = stream.read(5000)
             if overflowed:

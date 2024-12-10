@@ -94,6 +94,7 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     desc_text.text("※無言の状態が5秒続くと、録音を終了します。")
     status_text = st.empty()
     progress_bar = st.progress(progress_num)
+    print(sd.query_devices())
     with sd.InputStream(samplerate=fs, channels=2) as stream:
         while True:
             data, overflowed = stream.read(5000)

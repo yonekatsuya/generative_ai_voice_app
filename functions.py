@@ -94,13 +94,17 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     desc_text.text("※無言の状態が5秒続くと、録音を終了します。")
     status_text = st.empty()
     progress_bar = st.progress(progress_num)
-    print(sd.query_devices())
-    audio = pyaudio.PyAudio()
-    for i in range(audio.get_device_count()):
-        print(audio.get_device_info_by_index(i))
-    print("test2")
-    # 最大入力チャンネル数が0でない項目をマイクチャンネルとしてリストに追加
-    pa = pyaudio.PyAudio()
+
+    p = pyaudio.PyAudio()
+    device_count = p.get_device_count()
+    print(f"Number of devices: {device_count}")
+    
+    for i in range(device_count):
+        device_info = p.get_device_info_by_index(i)
+        print(f"Device {i}: {device_info['name']}")
+
+    p.terminate()
+
     mic_list = []
     for i in range(pa.get_device_count()):
         num_of_input_ch = pa.get_device_info_by_index(i)['maxInputChannels']

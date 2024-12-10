@@ -95,7 +95,17 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     status_text = st.empty()
     progress_bar = st.progress(progress_num)
     print(sd.query_devices())
-    with sd.InputStream(samplerate=fs, channels=2) as stream:
+    # 最大入力チャンネル数が0でない項目をマイクチャンネルとしてリストに追加
+    pa = pyaudio.PyAudio()
+    mic_list = []
+    for i in range(pa.get_device_count()):
+        num_of_input_ch = pa.get_device_info_by_index(i)['maxInputChannels']
+ 
+        if num_of_input_ch != 0:
+            mic_list.append(pa.get_device_info_by_index(i)['index'])
+ 
+    print(mic_list)
+    with sd.InputStream(samplerate=fs, channels=mic_list[1]) as stream:
         while True:
             data, overflowed = stream.read(5000)
             if overflowed:

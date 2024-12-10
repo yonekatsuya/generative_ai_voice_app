@@ -96,10 +96,9 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     progress_bar = st.progress(progress_num)
     print(sd.query_devices())
     audio = pyaudio.PyAudio()
-
-    # 音声デバイス毎のインデックス番号を一覧表示
-    for x in range(0, audio.get_device_count()):
-        print(audio.get_device_info_by_index(x))
+    for i in range(audio.get_device_count()):
+        print(audio.get_device_info_by_index(i))
+    print("test2")
     # 最大入力チャンネル数が0でない項目をマイクチャンネルとしてリストに追加
     pa = pyaudio.PyAudio()
     mic_list = []

@@ -163,5 +163,5 @@ cython_debug/
 
 # original
 bkup
-# audio/input/*
-# audio/output/*
+audio/input/*.wav
+audio/output/*.wav

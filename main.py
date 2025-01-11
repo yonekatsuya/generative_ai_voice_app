@@ -23,8 +23,8 @@ load_dotenv()
 st.markdown('## 生成AI英会話アプリ')
 # st.markdown("##### 「英会話開始」ボタンを押して、英会話を始めましょう。")
 
-st.sidebar.title('Control panel')
-st.sidebar.button('Reload button')
+# st.sidebar.title('Control panel')
+# st.sidebar.button('Reload button')
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -356,22 +356,19 @@ if st.session_state.start_flg:
 
     if st.session_state.mode == "日常英会話":
         # 音声入力の受け取り
-        speech_file_path = func.record_audio()
+        input_file_path = func.record_audio()
 
-        # with st.spinner('入力音声の処理中...'):
         # 音声入力をテキストに変換
-        result = func.transcribe(speech_file_path, st.session_state.client)
+        result = func.transcribe(input_file_path, st.session_state.client)
         st.session_state.messages.append({"role": "user", "content": result.text})
         with st.chat_message("user", avatar="images/23260507.jpg"):
             st.markdown(result.text)
 
-        # with st.spinner('回答生成中...'):
         result = st.session_state.chain.predict(input=result.text)
         st.session_state.messages.append({"role": "assistant", "content": result})
         with st.chat_message("assistant", avatar="images/370377.jpg"):
             st.markdown(result)
 
-        # with st.spinner('回答の音声化中...'):
         # LLMからの回答を音声データに変換
         response = st.session_state.client.audio.speech.create(
             model="tts-1",

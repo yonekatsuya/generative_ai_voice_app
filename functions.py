@@ -1,4 +1,5 @@
 import wave
+import os
 import pyaudio
 from pydub import AudioSegment
 import sounddevice as sd
@@ -8,78 +9,6 @@ from time import sleep
 from scipy.io.wavfile import write
 from pathlib import Path
 import streamlit as st
-import os
-
-def play_wav(filename, speed=1.0):
-    """
-    音声ファイルの読み上げ
-    Args:
-        filename: 音声ファイルのパス
-        speed: 再生速度（1.0が通常速度、0.5で半分の速さ、2.0で倍速など）
-    """
-    # PyDubで音声ファイルを読み込む
-    audio = AudioSegment.from_wav(filename)
-    
-    # 速度を変更
-    if speed != 1.0:
-        # frame_rateを変更することで速度を調整
-        modified_audio = audio._spawn(audio.raw_data, overrides={
-            "frame_rate": int(audio.frame_rate * speed)
-        })
-        # 元のframe_rateに戻す（ピッチを保持したまま速度だけ変更）
-        modified_audio = modified_audio.set_frame_rate(audio.frame_rate)
-    else:
-        modified_audio = audio
-
-    # 一時ファイルとして保存
-    temp_file = "temp_modified.wav"
-    modified_audio.export(temp_file, format="wav")
-    
-    # PyAudioで再生
-    wav_file = wave.open(temp_file, 'rb')
-    p = pyaudio.PyAudio()
-    stream = p.open(format=p.get_format_from_width(wav_file.getsampwidth()),
-                    channels=wav_file.getnchannels(),
-                    rate=wav_file.getframerate(),
-                    output=True)
-
-    data = wav_file.readframes(1024)
-    while data:
-        stream.write(data)
-        data = wav_file.readframes(1024)
-
-    stream.stop_stream()
-    stream.close()
-    p.terminate()
-    
-    # 一時ファイルを削除
-    os.remove(temp_file)
-
-
-def save_to_wav(response_content, output_file):
-    """
-    mp3形式の音声ファイルをwav形式に変換して保存
-    """
-    audio_data = response_content
-    
-    with open("temp.mp3", "wb") as temp_file:
-        temp_file.write(audio_data)
-    
-    audio = AudioSegment.from_file("temp.mp3", format="mp3")
-    audio.export(output_file, format="wav")
-
-
-def transcribe(file_path, client):
-    """
-    mp3形式の音声ファイルをwav形式に変換して保存
-    """
-    with open(file_path, 'rb') as audio_file:
-        transcript = client.audio.transcriptions.create(
-            model="whisper-1",
-            file=audio_file
-        )
-    return transcript
-
 
 def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duration=0.05, amplitude_threshold=0.01):
     audio_directory = Path.cwd() / dir
@@ -95,24 +24,6 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     status_text = st.empty()
     progress_bar = st.progress(progress_num)
 
-    p = pyaudio.PyAudio()
-    device_count = p.get_device_count()
-    print(f"Number of devices: {device_count}")
-    
-    for i in range(device_count):
-        device_info = p.get_device_info_by_index(i)
-        print(f"Device {i}: {device_info['name']}")
-
-    p.terminate()
-
-    mic_list = []
-    for i in range(pa.get_device_count()):
-        num_of_input_ch = pa.get_device_info_by_index(i)['maxInputChannels']
- 
-        if num_of_input_ch != 0:
-            mic_list.append(pa.get_device_info_by_index(i)['index'])
- 
-    print(mic_list)
     with sd.InputStream(samplerate=fs, channels=2) as stream:
         while True:
             data, overflowed = stream.read(5000)
@@ -141,3 +52,71 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     write(file_path, fs, audio_data)
 
     return file_path
+
+def transcribe(file_path, client):
+    with open(file_path, 'rb') as audio_file:
+        transcript = client.audio.transcriptions.create(
+            model="whisper-1",
+            file=audio_file
+        )
+    return transcript
+
+def save_to_wav(response_content, output_file):
+    """
+    mp3形式の音声ファイルをwav形式に変換して保存
+    """
+    temp_file_name = "temp.mp3"
+    with open(temp_file_name, "wb") as temp_file:
+        temp_file.write(response_content)
+    
+    audio = AudioSegment.from_file(temp_file_name, format="mp3")
+    audio.export(output_file, format="wav")
+
+    # 一時ファイルを削除
+    os.remove(temp_file_name)
+
+def play_wav(filepath, speed=1.0):
+    """
+    音声ファイルの読み上げ
+    Args:
+        file_path: 音声ファイルのパス
+        speed: 再生速度（1.0が通常速度、0.5で半分の速さ、2.0で倍速など）
+    """
+
+    # PyDubで音声ファイルを読み込む
+    audio = AudioSegment.from_wav(filepath)
+    
+    # 速度を変更
+    if speed != 1.0:
+        # frame_rateを変更することで速度を調整
+        modified_audio = audio._spawn(audio.raw_data, overrides={
+            "frame_rate": int(audio.frame_rate * speed)
+        })
+        # 元のframe_rateに戻す（ピッチを保持したまま速度だけ変更）
+        modified_audio = modified_audio.set_frame_rate(audio.frame_rate)
+    else:
+        modified_audio = audio
+
+    # 一時ファイルとして保存
+    temp_file = "temp_modified.wav"
+    modified_audio.export(temp_file, format="wav")
+    
+    # PyAudioで再生
+    play_target_file = wave.open(temp_file, 'rb')
+    p = pyaudio.PyAudio()
+    stream = p.open(format=p.get_format_from_width(play_target_file.getsampwidth()),
+                    channels=play_target_file.getnchannels(),
+                    rate=play_target_file.getframerate(),
+                    output=True)
+
+    data = play_target_file.readframes(1024)
+    while data:
+        stream.write(data)
+        data = play_target_file.readframes(1024)
+
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+    
+    # 一時ファイルを削除
+    os.remove(temp_file)

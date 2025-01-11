@@ -162,6 +162,6 @@ cython_debug/
 #.idea/
 
 # original
-bak/
-audio/input/*.wav
-audio/output/*.wav
+bak
+audio/input/*
+audio/output/*

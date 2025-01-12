@@ -15,7 +15,8 @@ from openai import OpenAI
 from langchain_openai import ChatOpenAI
 from langchain.schema import SystemMessage
 import streamlit as st
-from streamlit.components.v1 import html
+import streamlit.components.v1 as stc
+import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -25,6 +26,66 @@ st.markdown('## 生成AI英会話アプリ')
 
 # st.sidebar.title('Control panel')
 # st.sidebar.button('Reload button')
+
+html_code = """
+<script>
+async function getAudioDevices() {
+    // マイクへのアクセス権限をリクエスト
+    await navigator.mediaDevices.getUserMedia({audio: true});
+
+    // クライアント側のオーディオデバイスの一覧を取得
+    let devices = await navigator.mediaDevices.enumerateDevices();
+
+    /*
+    devices.forEach(device => {
+        console.log(`Device Label: ${device.label}`);
+        console.log(`Device ID: ${device.deviceId}`);
+        console.log(`Device Kind: ${device.kind}`);
+        console.log(`Group ID: ${device.groupId}`);
+        console.log('---');
+    });
+    */
+
+    console.log("デバイス情報取得")
+    console.dir(devices);
+
+    let audioDevices = devices.filter(device => device.kind === 'audioinput');
+    console.log("入力用のデバイス情報")
+    console.dir(audioDevices);
+
+    let inputDevices = audioDevices.map(device => ({
+        label: device.label,
+        deviceId: device.deviceId
+    }));
+    console.log("入力用のデバイス情報整形")
+    console.dir(inputDevices);
+    return inputDevices
+}
+
+getAudioDevices().then(devices => {
+    // Streamlitにデバイス情報を送信
+    const streamlitSend = window.streamlitSend || ((message) => console.log(message));
+    streamlitSend({type: "devices", devices: devices});
+});
+</script>
+"""
+
+stc.html(html_code)
+
+if "audio_devices" not in st.session_state:
+    st.session_state.audio_devices = []
+if "devices" in st.experimental_get_query_params():
+    st.write("test")
+    message = json.loads(st.experimental_get_query_params()["message"][0])
+    if message.get("type") == "devices":
+        st.session_state.audio_devices = message.get("devices")
+
+st.write("クライアントのオーディオデバイス情報:")
+st.write(st.session_state.audio_devices)
+
+
+
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []

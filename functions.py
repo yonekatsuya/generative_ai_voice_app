@@ -25,7 +25,8 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     progress_bar = st.progress(progress_num)
 
     print("現在使用中のデバイス一覧")
-    # print(sd.query_devices())
+    print(sd.query_devices())
+    print("デバイス表示終了")
 
     with sd.InputStream(samplerate=fs, channels=2) as stream:
         while True:

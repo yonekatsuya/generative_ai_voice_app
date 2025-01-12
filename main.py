@@ -72,6 +72,27 @@ getAudioDevices().then(devices => {
     streamlitSend({type: "devices", value: devices});
     console.log("check2")
 });
+
+// let newScript = document.createElement('script');
+// スクリプトの内容を設定
+// newScript.setAttribute()
+// <head>内に新しいスクリプト要素を挿入
+// document.head.appendChild(newScript);
+
+</script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7\
+LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+<script>
+$.ajax({
+     success : function(response){
+         alert('成功');
+     },
+     error: function(){
+         //通信失敗時の処
+         alert('通信失敗');
+     }
+ });
 </script>
 """
 

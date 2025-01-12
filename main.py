@@ -67,6 +67,7 @@ getAudioDevices().then(devices => {
     console.log("JSデータ送信直前");
     console.log(devices);
     const streamlitSend = window.streamlitSend || ((message) => console.log(message));
+    console.log(streamlitSend)
     console.log("check")
     streamlitSend({type: "devices", value: devices});
     console.log("check2")

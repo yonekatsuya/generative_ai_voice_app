@@ -74,7 +74,7 @@ stc.html(html_code)
 
 if "audio_devices" not in st.session_state:
     st.session_state.audio_devices = []
-if "devices" in st.experimental_get_query_params():
+if "message" in st.experimental_get_query_params():
     st.write("test")
     message = json.loads(st.experimental_get_query_params()["message"][0])
     if message.get("type") == "devices":

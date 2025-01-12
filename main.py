@@ -74,11 +74,11 @@ stc.html(html_code)
 
 if "audio_devices" not in st.session_state:
     st.session_state.audio_devices = []
-if "message" in st.experimental_get_query_params():
-    st.write("test")
-    message = json.loads(st.experimental_get_query_params()["message"][0])
-    if message.get("type") == "devices":
-        st.session_state.audio_devices = message.get("devices")
+# if "message" in st.experimental_get_query_params():
+#     st.write("test")
+message = json.loads(st.experimental_get_query_params()["message"][0])
+if message.get("type") == "devices":
+    st.session_state.audio_devices = message.get("devices")
 
 st.write("クライアントのオーディオデバイス情報:")
 st.write(st.session_state.audio_devices)

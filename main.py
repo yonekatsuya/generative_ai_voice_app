@@ -64,8 +64,12 @@ async function getAudioDevices() {
 
 getAudioDevices().then(devices => {
     // Streamlitにデバイス情報を送信
+    console.log("JSデータ送信直前");
+    console.log(devices);
     const streamlitSend = window.streamlitSend || ((message) => console.log(message));
-    streamlitSend({type: "devices", devices: devices});
+    console.log("check")
+    streamlitSend({type: "devices", value: devices});
+    console.log("check2")
 });
 </script>
 """
@@ -74,11 +78,13 @@ stc.html(html_code)
 
 if "audio_devices" not in st.session_state:
     st.session_state.audio_devices = []
-# if "message" in st.experimental_get_query_params():
-#     st.write("test")
-message = json.loads(st.experimental_get_query_params()["message"][0])
-if message.get("type") == "devices":
-    st.session_state.audio_devices = message.get("devices")
+
+st.write(st.experimental_get_query_params())
+if "message" in st.experimental_get_query_params():
+    st.write("test")
+    message = json.loads(st.experimental_get_query_params()["message"][0])
+    if message.get("type") == "devices":
+        st.session_state.audio_devices = message.get("devices")
 
 st.write("クライアントのオーディオデバイス情報:")
 st.write(st.session_state.audio_devices)

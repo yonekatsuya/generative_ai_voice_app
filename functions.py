@@ -24,12 +24,6 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
     status_text = st.empty()
     progress_bar = st.progress(progress_num)
 
-    # 調整
-    default_device = sd.query_devices(kind='input')
-    max_channels = default_device['max_input_channels']
-    print(f"デフォルトデバイス: {default_device['name']}")
-    print(f"使用可能な入力チャンネル数: {max_channels}")
-
     with sd.InputStream(samplerate=fs, channels=2) as stream:
         while True:
             data, overflowed = stream.read(5000)

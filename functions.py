@@ -30,6 +30,7 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
 
     with sd.InputStream(samplerate=fs, channels=2) as stream:
         while True:
+            print("while処理開始")
             data, overflowed = stream.read(5000)
             if overflowed:
                 st.error("メモリや音声入力速度の問題で、一部の音声データが失われた可能性があります。")
@@ -50,6 +51,7 @@ def record_audio(fs=48000, dir="audio/input", silence_threshold=2.5, min_duratio
                 progress_num = 0
                 progress_bar.progress(0)
                 status_text.text(f'Progress: 0%')
+    print("while終了")
 
     audio_data = np.concatenate(recorded_audio, axis=0)
     audio_data = np.int16(audio_data * 32767)# 録音データを16ビット整数に変換

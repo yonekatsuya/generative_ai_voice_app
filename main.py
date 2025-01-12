@@ -85,14 +85,18 @@ getAudioDevices().then(devices => {
 LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <script>
 $.ajax({
-     success : function(response){
-         alert('成功');
-     },
-     error: function(){
+    url: "get_audio_info.py",
+    data: "test",
+    dataTyep: "json",
+    success : function(response){
+        alert('成功');
+        console.log(response)
+    },
+    error: function(){
          //通信失敗時の処
-         alert('通信失敗');
-     }
- });
+        alert('通信失敗');
+    }
+});
 </script>
 """
 
